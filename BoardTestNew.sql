@@ -155,57 +155,7 @@ FROM #TB_MO
 
 --  插入 待发货 数据
 INSERT INTO #TB_FMO
-SELECT
-'待发货' AS ProName,
-	B.KeyID, 
-	B.MO, 
-	ISNULL(C.StyleID, '') AS StyleID,
--- 	C.StyleID,
-	'' AS DeptName,
-	SUM ( B.InputQty ) AS PlanTotalQty,
-	CONVERT ( VARCHAR ( 10 ), B.BillDate, 23 ) AS MakeDate,
-	CONVERT ( VARCHAR ( 10 ), DATEADD( DD, 30, B.BillDate ), 23 ) AS ExpireDate,
-	0 AS HjFQty,--发货数
- 	0 AS HjSQty,
-	0 AS TkSQty,
-	0 AS XsSQty,
-	0 AS ZtSQty,
-	0 AS CjSQty,
-	0 AS BzSQty,--收货数
-	0 AS HjZzpQty,
-	0 AS TkZzpQty,
-	0 AS XsZzpQty,
-	0 AS ZtZzpQty,
-	0 AS CjZzpQty,
-	0 AS BzZzpQty,--在制品
-	0 AS HjWwcQty,
-	0 AS TkWwcQty,
-	0 AS XsWwcQty,
-	0 AS ZtWwcQty,
-	0 AS CjWwcQty,
-	0 AS BzWwcQty,--未完成
-	0 AS ZzDt,
-	null AS ZjDt,--最早 最晚流转时间
-	0 AS JD,
-	0 AS TimeJD,--进度 时间进度
-	0 AS CSID
-FROM
-	dbo.SU_v_MaterialStock AS A
-	LEFT JOIN
-	dbo.SU_v_MaterialStockBillPO_List AS B
-	ON 
-		A.StockID = B.StockID
-	LEFT JOIN
-	dbo.PR_MO AS C
-	ON 
-		B.MO = C.MO
-WHERE
-	A.DepotID = 8
-GROUP BY
-	B.MO, 
-	B.KeyID, 
-	B.BillDate, 
-	C.StyleID
+EXEC SC_GETREPERTORY
 ------------START 已经发货数据-------------
 SELECT
 	A.MO,
