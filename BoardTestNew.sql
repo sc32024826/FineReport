@@ -158,15 +158,14 @@ INSERT INTO #TB_FMO
 EXEC SC_GETREPERTORY
 ------------START 已经发货数据-------------
 SELECT
-	A.MO,
+	A.VatNo,
 	CAST ( SUM ( A.InputQty ) AS INT ) AS Qty 
 	INTO #TB_HAVESEND -- 已经发货数的临时表
 FROM
-	dbo.SU_v_MaterialStockBillOutOther_List AS A 
-WHERE
-	A.BillType IN ( 11, 13, 52 ) AND A.MO <> ''
+	dbo.SU_v_MaterialStockDetail_Out AS A 
+	RIGHT JOIN SU_MaterialStockBill B ON B.KeyID = A.KeyID AND B.IOType = 2
 GROUP BY
-	A.MO
+	A.VatNo
 -------------END ------------
 SELECT 
 	A.ProName AS '项目名称',
@@ -181,11 +180,10 @@ SELECT
 	WHEN '待发货' THEN CAST(ISNULL(B.Qty, 0)/ CAST(A.PlanTotalQty AS FLOAT)AS DECIMAL(5,4)) 
 	ELSE A.JD 
 	END AS JD,
--- 	CAST(ISNULL(B.Qty, 0)/ CAST(A.PlanTotalQty AS FLOAT)AS DECIMAL(5,4)) ,
 	A.TimeJD,
 	B.Qty
 FROM #TB_FMO A
-LEFT JOIN #TB_HAVESEND B ON B.MO = A.MO 
+LEFT JOIN #TB_HAVESEND B ON B.VatNo = A.MO 
 ORDER BY 
  CHARINDEX(','+A.ProName+',',',超期预警,进度异常,正常,等待投产,待入库,待发货,'),
  A.ExpireDate 
